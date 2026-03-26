@@ -1,0 +1,25 @@
+{{- if not (.Page.Scratch.Get "hugoModGraphvizLoaded") -}}
+  <script src="{{ "vendor/hugo-mod-graphviz/viz.js" | relURL }}"></script>
+  <link rel="stylesheet" href="{{ "vendor/hugo-mod-graphviz/hugo-mod-graphviz.css" | relURL }}">
+  <script src="{{ "vendor/hugo-mod-graphviz/hugo-mod-graphviz.js" | relURL }}"></script>
+  {{- .Page.Scratch.Set "hugoModGraphvizLoaded" true -}}
+{{- end -}}
+{{- $source := .Inner -}}
+{{- $src := .Get "src" -}}
+{{- $encodedSource := "" -}}
+{{- with .Get "b64" -}}
+  {{- $encodedSource = . -}}
+{{- end -}}
+{{- if ne $src "" -}}
+  {{- $source = readFile (printf "assets/%s" $src) -}}
+{{- end -}}
+{{- if eq $encodedSource "" -}}
+  {{- $source = trim $source " \n\r\t" -}}
+  {{- if eq $source "" -}}
+    {{- errorf "The %q shortcode requires one of: inner content, b64, or src. File: %s" .Name .Page.File.Path -}}
+  {{- end -}}
+  {{- $encodedSource = $source | base64Encode -}}
+{{- end -}}
+<div class="hugo-mod-graphviz" data-hugo-mod-graphviz data-source="{{ $encodedSource }}">
+  <div class="hugo-mod-graphviz__output" data-graphviz-output></div>
+</div>
