@@ -4,8 +4,8 @@
   <script src="{{ "vendor/hugo-mod-graphviz/hugo-mod-graphviz.js" | relURL }}"></script>
   {{- .Page.Scratch.Set "hugoModGraphvizLoaded" true -}}
 {{- end -}}
-{{- $source := .Inner -}}
-{{- $src := .Get "src" -}}
+{{- $source := or .Inner "" -}}
+{{- $src := or (.Get "src") "" -}}
 {{- $encodedSource := "" -}}
 {{- with .Get "b64" -}}
   {{- $encodedSource = . -}}
