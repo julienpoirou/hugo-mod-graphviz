@@ -69,14 +69,51 @@ jobs:
           }
           EOF
 
-          cat > "${SITE_DIR}/content/test.md" <<'EOF'
+          B64_SOURCE=$(printf 'digraph { X -> Y; }' | base64 -w0)
+
+          cat > "${SITE_DIR}/content/test.md" <<EOF
           ---
           title: "Graphviz test"
           ---
 
           {{< graphviz src="renderers/graphviz.dot" />}}
+
+          {{< graphviz >}}
+          digraph {
+            "Début" -> "École n°1";
+          }
+          {{< /graphviz >}}
+
+          {{< graphviz b64="${B64_SOURCE}" />}}
           EOF
 
           hugo --source "${SITE_DIR}" --destination "${OUT_DIR}"
-          grep -q 'vendor/hugo-mod-graphviz/hugo-mod-graphviz.js' "${OUT_DIR}/test/index.html"
-          grep -q 'data-hugo-mod-graphviz' "${OUT_DIR}/test/index.html"
+          PAGE="${OUT_DIR}/test/index.html"
+
+          # Assets injected, and only once for the whole page.
+          grep -q 'vendor/hugo-mod-graphviz/hugo-mod-graphviz.js' "${PAGE}"
+          test "$(grep -c 'hugo-mod-graphviz.js' "${PAGE}")" -eq 1
+
+          # All three input modes produce a wrapper.
+          test "$(grep -c 'data-hugo-mod-graphviz' "${PAGE}")" -eq 3
+
+          # Inline UTF-8 source survives the base64 round-trip untouched.
+          # Hugo escapes "+" as "&#43;" in attributes; browsers unescape it,
+          # so the assertion must do the same before decoding.
+          grep -o 'data-source="[^"]*"' "${PAGE}" | sed -n '2p' \
+            | sed 's/data-source="//;s/"$//;s/&#43;/+/g' | base64 -d \
+            | grep -q "École n°1"
+
+          # An empty source must fail the build explicitly.
+          cat > "${SITE_DIR}/content/invalid.md" <<'EOF'
+          ---
+          title: "invalid"
+          ---
+
+          {{< graphviz >}}
+          {{< /graphviz >}}
+          EOF
+          if hugo --source "${SITE_DIR}" --destination "${RUNNER_TEMP}/public-invalid"; then
+            echo "expected the build to fail on an empty shortcode source" >&2
+            exit 1
+          fi
