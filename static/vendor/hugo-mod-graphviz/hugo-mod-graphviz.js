@@ -52,6 +52,33 @@
     }
   };
 
+  // Rendering instantiates the Graphviz WASM runtime, which is expensive.
+  // Defer each diagram until it approaches the viewport instead of paying
+  // that cost during page load.
+  let observer = null;
+  const observeElement = (element) => {
+    if (typeof IntersectionObserver === "undefined") {
+      renderElement(element);
+      return;
+    }
+    if (!observer) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          observer.unobserve(entry.target);
+          renderElement(entry.target);
+        });
+      }, { rootMargin: "200px" });
+    }
+    observer.observe(element);
+  };
+
+  const observeAll = (root = document) => {
+    root.querySelectorAll("[data-hugo-mod-graphviz]").forEach(observeElement);
+  };
+
+  // Immediate rendering, kept for dynamically injected content and as an
+  // escape hatch when lazy rendering is not wanted.
   const renderAll = (root = document) => {
     root.querySelectorAll("[data-hugo-mod-graphviz]").forEach((element) => {
       renderElement(element);
@@ -59,10 +86,10 @@
   };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => renderAll(), { once: true });
+    document.addEventListener("DOMContentLoaded", () => observeAll(), { once: true });
   } else {
-    renderAll();
+    observeAll();
   }
 
-  window.HugoModGraphviz = { renderAll };
+  window.HugoModGraphviz = { renderAll, observeAll };
 })();
