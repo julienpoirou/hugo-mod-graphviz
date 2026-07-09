@@ -1,7 +1,7 @@
 {{- if not (.Page.Scratch.Get "hugoModGraphvizLoaded") -}}
-  <script src="{{ "vendor/hugo-mod-graphviz/viz.js" | relURL }}"></script>
+  <script defer src="{{ "vendor/hugo-mod-graphviz/viz.js" | relURL }}"></script>
   <link rel="stylesheet" href="{{ "vendor/hugo-mod-graphviz/hugo-mod-graphviz.css" | relURL }}">
-  <script src="{{ "vendor/hugo-mod-graphviz/hugo-mod-graphviz.js" | relURL }}"></script>
+  <script defer src="{{ "vendor/hugo-mod-graphviz/hugo-mod-graphviz.js" | relURL }}"></script>
   {{- .Page.Scratch.Set "hugoModGraphvizLoaded" true -}}
 {{- end -}}
 {{- $source := or .Inner "" -}}
