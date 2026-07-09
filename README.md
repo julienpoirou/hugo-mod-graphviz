@@ -54,6 +54,20 @@ File source:
 {{< graphviz src="renderers/graphviz.dot" />}}
 ```
 
+Base64 source (when the DOT text would otherwise conflict with Markdown
+or shortcode parsing):
+
+```text
+{{< graphviz b64="ZGlncmFwaCB7IEEgLT4gQjsgfQ==" />}}
+```
+
+## Rendering behavior
+
+The Graphviz WASM runtime is instantiated lazily: each diagram renders when
+it approaches the viewport (200px margin). For content injected dynamically
+after page load, call `window.HugoModGraphviz.observeAll(root)` for lazy
+rendering or `window.HugoModGraphviz.renderAll(root)` to render immediately.
+
 ## Output assets
 
 The module publishes:
