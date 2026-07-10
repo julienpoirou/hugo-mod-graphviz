@@ -1,0 +1,10 @@
+{{- $src := .Get "src" -}}
+{{- if not $src -}}
+  {{- errorf "hugo-mod-graphviz: param 'src' is required for graphviz-static in %s" .Page.File.Path -}}
+{{- end -}}
+{{- $alt := default "Graphviz diagram" (.Get "alt") -}}
+{{- $class := default "" (.Get "class") -}}
+{{- $svgPath := printf "generated/graphviz/%s" ($src | replaceRE "\\.[^.]+$" ".svg") -}}
+<figure class="hugo-mod-graphviz-static{{ if $class }} {{ $class }}{{ end }}">
+  <img src="{{ $svgPath | relURL }}" alt="{{ $alt }}" loading="lazy">
+</figure>

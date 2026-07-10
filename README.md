@@ -24,6 +24,7 @@ Standalone Hugo module for Graphviz and DOT rendering through a vendored `viz.js
 
 - Hugo `>= 0.124`
 - A Hugo site with Hugo Modules enabled
+- Node.js (any current LTS) — only for the optional build-time rendering mode, see below
 
 ## Installation
 
@@ -68,6 +69,46 @@ it approaches the viewport (200px margin). For content injected dynamically
 after page load, call `window.HugoModGraphviz.observeAll(root)` for lazy
 rendering or `window.HugoModGraphviz.renderAll(root)` to render immediately.
 
+## Choosing a rendering mode
+
+Two rendering modes are available, and DOT graphs have no interactivity to
+lose either way, so build-time rendering is usually the better default:
+
+| | `{{< graphviz >}}` (runtime) | `{{< graphviz-static >}}` (build-time) |
+|---|---|---|
+| Where it renders | Visitor's browser (WASM) | Your build machine (Node) |
+| Client cost | ~1.4 MB WASM runtime, deferred + lazy | Zero JS shipped |
+| Input modes | inline, `src`, `b64` | `src` only |
+| Output | Live `<svg>` in the DOM | Static `<img>` pointing at a pre-rendered SVG |
+| Requires | Nothing extra | `node scripts/render-graphviz.js` before `hugo build` |
+
+Use the runtime shortcode for diagrams assembled from dynamic or inline
+content. For diagrams that live in a file under `assets/`, prefer the
+build-time shortcode: it ships no JavaScript to visitors and the output is
+indexable, cacheable, plain SVG — the same tradeoff `hugo-mod-plantuml` makes
+for PlantUML diagrams.
+
+### Build-time usage
+
+Create a source file under `assets/`:
+
+```text
+assets/diagrams/architecture.dot
+```
+
+Render it locally (mirrors `assets/**/*.{dot,gv}` into `static/generated/graphviz/**/*.svg`,
+skipping files that are already up to date):
+
+```bash
+node _modules/hugo-mod-graphviz/scripts/render-graphviz.js .
+```
+
+Use the shortcode:
+
+```text
+{{< graphviz-static src="diagrams/architecture.dot" alt="Architecture diagram" >}}
+```
+
 ## Output assets
 
 The module publishes:
@@ -75,6 +116,7 @@ The module publishes:
 - `vendor/hugo-mod-graphviz/viz.js`
 - `vendor/hugo-mod-graphviz/hugo-mod-graphviz.js`
 - `vendor/hugo-mod-graphviz/hugo-mod-graphviz.css`
+- `scripts/render-graphviz.js` (build-time renderer, see above)
 
 ## Development
 

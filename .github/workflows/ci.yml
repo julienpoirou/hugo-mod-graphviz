@@ -117,3 +117,46 @@ jobs:
             echo "expected the build to fail on an empty shortcode source" >&2
             exit 1
           fi
+
+      - name: Build-time rendering (graphviz-static)
+        shell: bash
+        run: |
+          set -euo pipefail
+          SITE_DIR="${RUNNER_TEMP}/site"
+
+          # Remove the intentionally-invalid page from the previous step's
+          # negative test; otherwise it fails every subsequent full-site build.
+          rm -f "${SITE_DIR}/content/invalid.md"
+
+          printf 'digraph {\n  "Début" -> "École n°1";\n}\n' > "${SITE_DIR}/assets/static-diagram.dot"
+
+          cat > "${SITE_DIR}/content/static-test.md" <<'EOF'
+          ---
+          title: "Graphviz static test"
+          ---
+
+          {{< graphviz-static src="static-diagram.dot" alt="Static diagram" >}}
+          EOF
+
+          node "${SITE_DIR}/_modules/hugo-mod-graphviz/scripts/render-graphviz.js" "${SITE_DIR}"
+          test -f "${SITE_DIR}/static/generated/graphviz/static-diagram.svg"
+          grep -q '<svg' "${SITE_DIR}/static/generated/graphviz/static-diagram.svg"
+          grep -q 'École n°1' "${SITE_DIR}/static/generated/graphviz/static-diagram.svg"
+
+          # Incremental: a second run must render nothing (source unchanged).
+          if [ -n "$(node "${SITE_DIR}/_modules/hugo-mod-graphviz/scripts/render-graphviz.js" "${SITE_DIR}")" ]; then
+            echo "expected the second run to skip an already up-to-date diagram" >&2
+            exit 1
+          fi
+
+          hugo --source "${SITE_DIR}" --destination "${RUNNER_TEMP}/public-static"
+          grep -q '/generated/graphviz/static-diagram.svg' "${RUNNER_TEMP}/public-static/static-test/index.html"
+
+          # An invalid DOT source must fail the render script and leave no
+          # partial output behind.
+          printf 'digraph { not valid [[[ \n' > "${SITE_DIR}/assets/broken.dot"
+          if node "${SITE_DIR}/_modules/hugo-mod-graphviz/scripts/render-graphviz.js" "${SITE_DIR}"; then
+            echo "expected render-graphviz.js to fail on invalid DOT" >&2
+            exit 1
+          fi
+          test ! -f "${SITE_DIR}/static/generated/graphviz/broken.svg"
