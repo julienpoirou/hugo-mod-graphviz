@@ -29,7 +29,7 @@ jobs:
           set -euo pipefail
           SITE_DIR="${RUNNER_TEMP}/site"
           OUT_DIR="${RUNNER_TEMP}/public"
-          mkdir -p "${SITE_DIR}/content" "${SITE_DIR}/assets/renderers" "${SITE_DIR}/layouts/_default" "${SITE_DIR}/_modules"
+          mkdir -p "${SITE_DIR}/content" "${SITE_DIR}/assets/renderers" "${SITE_DIR}/static" "${SITE_DIR}/layouts/_default" "${SITE_DIR}/_modules"
           ln -s "${GITHUB_WORKSPACE}" "${SITE_DIR}/_modules/hugo-mod-graphviz"
 
           cat > "${SITE_DIR}/layouts/_default/single.html" <<'EOF'
@@ -52,14 +52,17 @@ jobs:
               source = "assets"
               target = "assets"
             [[module.mounts]]
+              source = "static"
+              target = "static"
+            [[module.mounts]]
               source = "layouts"
               target = "layouts"
             [[module.mounts]]
               source = "_modules/hugo-mod-graphviz/layouts"
               target = "layouts"
             [[module.mounts]]
-              source = "_modules/hugo-mod-graphviz/static"
-              target = "static"
+              source = "_modules/hugo-mod-graphviz/assets"
+              target = "assets"
           EOF
 
           cat > "${SITE_DIR}/assets/renderers/graphviz.dot" <<'EOF'
@@ -90,9 +93,17 @@ jobs:
           hugo --source "${SITE_DIR}" --destination "${OUT_DIR}"
           PAGE="${OUT_DIR}/test/index.html"
 
-          # Assets injected, and only once for the whole page.
-          grep -q 'vendor/hugo-mod-graphviz/hugo-mod-graphviz.js' "${PAGE}"
-          test "$(grep -c 'hugo-mod-graphviz.js' "${PAGE}")" -eq 1
+          # Assets are fingerprinted (cache-busting) and injected only once
+          # for the whole page.
+          grep -oE 'vendor/hugo-mod-graphviz/hugo-mod-graphviz\.[0-9a-f]+\.js' "${PAGE}"
+          test "$(grep -oE 'vendor/hugo-mod-graphviz/hugo-mod-graphviz\.[0-9a-f]+\.js' "${PAGE}" | wc -l)" -eq 1
+
+          # Every injected asset ships a matching Subresource Integrity hash.
+          test "$(grep -c 'integrity="sha256-' "${PAGE}")" -eq 3
+
+          # The fingerprinted files are actually published at that path.
+          JS_PATH=$(grep -oE 'vendor/hugo-mod-graphviz/hugo-mod-graphviz\.[0-9a-f]+\.js' "${PAGE}" | head -1)
+          test -f "${OUT_DIR}/${JS_PATH}"
 
           # All three input modes produce a wrapper.
           test "$(grep -c 'data-hugo-mod-graphviz' "${PAGE}")" -eq 3
@@ -151,6 +162,9 @@ jobs:
 
           hugo --source "${SITE_DIR}" --destination "${RUNNER_TEMP}/public-static"
           grep -q '/generated/graphviz/static-diagram.svg' "${RUNNER_TEMP}/public-static/static-test/index.html"
+          # The referenced file must actually be copied into the published
+          # output, not just linked from the HTML.
+          test -f "${RUNNER_TEMP}/public-static/generated/graphviz/static-diagram.svg"
 
           # An invalid DOT source must fail the render script and leave no
           # partial output behind.
