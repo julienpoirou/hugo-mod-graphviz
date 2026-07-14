@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.1...v0.3.2) (2026-07-14)
+
+
+### Corrections 🐛
+
+* **tests:** Contain served paths within rootDir in serve.js ([c505f3a](https://github.com/julienpoirou/hugo-mod-graphviz/commit/c505f3a0c69cb3eb06b50ec6bdbee3d60af30693))
+
 ## [0.3.1](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.0...v0.3.1) (2026-07-14)
 
 
