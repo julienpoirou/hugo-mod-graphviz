@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.0...v0.3.1) (2026-07-14)
+
+
+### Corrections 🐛
+
+* **assets:** Move vendored assets out of a "vendor/" path component ([205ac94](https://github.com/julienpoirou/hugo-mod-graphviz/commit/205ac9448a341dbc478db90b4963e4490c3e6d5a))
+
 ## [0.3.0](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.2.0...v0.3.0) (2026-07-10)
 
 
