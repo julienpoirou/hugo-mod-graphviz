@@ -15,7 +15,7 @@ const siteDir = path.resolve(process.argv[2] || "/src");
 const moduleDir = path.join(siteDir, "_modules", "hugo-mod-graphviz");
 const assetsDir = path.join(siteDir, "assets");
 const outDir = path.join(siteDir, "static", "generated", "graphviz");
-const vizPath = path.join(moduleDir, "assets", "vendor", "hugo-mod-graphviz", "viz.js");
+const vizPath = path.join(moduleDir, "assets", "libs", "hugo-mod-graphviz", "viz.js");
 
 function walk(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });

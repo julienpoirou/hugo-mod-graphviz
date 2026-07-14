@@ -115,12 +115,12 @@ The module publishes, through Hugo Pipes (`resources.Get` + `fingerprint`),
 so each file's published URL includes a content hash for cache-busting and
 ships a Subresource Integrity attribute:
 
-- `vendor/hugo-mod-graphviz/viz.<hash>.js`
-- `vendor/hugo-mod-graphviz/hugo-mod-graphviz.<hash>.js`
-- `vendor/hugo-mod-graphviz/hugo-mod-graphviz.<hash>.css`
+- `libs/hugo-mod-graphviz/viz.<hash>.js`
+- `libs/hugo-mod-graphviz/hugo-mod-graphviz.<hash>.js`
+- `libs/hugo-mod-graphviz/hugo-mod-graphviz.<hash>.css`
 - `scripts/render-graphviz.js` (build-time renderer, see above)
 
-Source files live under `assets/vendor/hugo-mod-graphviz/` in this
+Source files live under `assets/libs/hugo-mod-graphviz/` in this
 repository; see [`VENDORED.md`](VENDORED.md) for their unfingerprinted
 checksums.
 

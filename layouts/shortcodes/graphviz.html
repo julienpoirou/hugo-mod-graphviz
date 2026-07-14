@@ -1,7 +1,7 @@
 {{- if not (.Page.Scratch.Get "hugoModGraphvizLoaded") -}}
-  {{- $lib := resources.Get "vendor/hugo-mod-graphviz/viz.js" | fingerprint "sha256" -}}
-  {{- $style := resources.Get "vendor/hugo-mod-graphviz/hugo-mod-graphviz.css" | fingerprint "sha256" -}}
-  {{- $glue := resources.Get "vendor/hugo-mod-graphviz/hugo-mod-graphviz.js" | fingerprint "sha256" -}}
+  {{- $lib := resources.Get "libs/hugo-mod-graphviz/viz.js" | fingerprint "sha256" -}}
+  {{- $style := resources.Get "libs/hugo-mod-graphviz/hugo-mod-graphviz.css" | fingerprint "sha256" -}}
+  {{- $glue := resources.Get "libs/hugo-mod-graphviz/hugo-mod-graphviz.js" | fingerprint "sha256" -}}
   <script defer src="{{ $lib.RelPermalink }}" integrity="{{ $lib.Data.Integrity }}"></script>
   <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
   <script defer src="{{ $glue.RelPermalink }}" integrity="{{ $glue.Data.Integrity }}"></script>
