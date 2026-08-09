@@ -2,43 +2,52 @@
 
 [![CI](https://github.com/julienpoirou/hugo-mod-graphviz/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/julienpoirou/hugo-mod-graphviz/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/julienpoirou/hugo-mod-graphviz/actions/workflows/codeql.yml/badge.svg)](https://github.com/julienpoirou/hugo-mod-graphviz/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/julienpoirou/hugo-mod-graphviz/badge)](https://scorecard.dev/viewer/?uri=github.com/julienpoirou/hugo-mod-graphviz)
 [![Release](https://img.shields.io/github/v/release/julienpoirou/hugo-mod-graphviz?include_prereleases&sort=semver)](https://github.com/julienpoirou/hugo-mod-graphviz/releases)
 [![Hugo Module](https://img.shields.io/badge/Hugo-Module-FF4088?logo=hugo&logoColor=white)](https://gohugo.io/hugo-modules/)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196.svg)](https://www.conventionalcommits.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 <p align="center">
   <img src="./logo.svg" alt="hugo-mod-graphviz logo" width="160" height="160">
 </p>
 
-Standalone Hugo module for Graphviz and DOT rendering through a vendored `viz.js` runtime.
+<p align="center">
+  <strong>Graphviz / DOT diagrams in your Hugo pages.</strong><br>
+  Rendered client-side by a vendored <code>viz.js</code>, or pre-rendered to plain SVG at build time.
+</p>
 
-## Features
+## Requires
 
-- Render Graphviz diagrams with `{{< graphviz >}}`
-- Support `src`, `b64`, and inline body input modes
-- Ship vendored `viz.js`
-- Include a runtime fallback from `renderSVGElement()` to `renderString()`
-- Fail explicitly at build time when shortcode source is missing
+- Hugo >= `0.124`. The extended edition is not required.
+- Node.js (any current LTS), only for the build-time `graphviz-static` mode.
 
-## Requirements
+## Install
 
-- Hugo `>= 0.124`
-- A Hugo site with Hugo Modules enabled
-- Node.js (any current LTS) — only for the optional build-time rendering mode, see below
+**Binary** - Hugo and Go installed locally:
 
-## Installation
-
-Import the module in your Hugo site:
+```bash
+hugo mod init example.com/my-site
+hugo mod get github.com/julienpoirou/hugo-mod-graphviz
+```
 
 ```toml
+# hugo.toml
 [module]
   [[module.imports]]
     path = "github.com/julienpoirou/hugo-mod-graphviz"
 ```
 
+**Container** - Docker installed locally:
+
+```bash
+alias hugo='docker run --rm -v "$PWD":/src -p 1313:1313 hugomods/hugo:go-git hugo'
+hugo mod init example.com/my-site
+hugo mod get github.com/julienpoirou/hugo-mod-graphviz
+```
+
 ## Usage
 
-Inline source:
+**Shortcode** - Raw DOT source between the tags:
 
 ```text
 {{< graphviz >}}
@@ -49,93 +58,65 @@ digraph {
 {{< /graphviz >}}
 ```
 
-File source:
+**Self-closing shortcode** - Source read from a file:
 
 ```text
 {{< graphviz src="renderers/graphviz.dot" />}}
 ```
 
-Base64 source (when the DOT text would otherwise conflict with Markdown
-or shortcode parsing):
+**Self-closing shortcode** - Source passed as base64:
 
 ```text
 {{< graphviz b64="ZGlncmFwaCB7IEEgLT4gQjsgfQ==" />}}
 ```
 
-## Rendering behavior
-
-The Graphviz WASM runtime is instantiated lazily: each diagram renders when
-it approaches the viewport (200px margin). For content injected dynamically
-after page load, call `window.HugoModGraphviz.observeAll(root)` for lazy
-rendering or `window.HugoModGraphviz.renderAll(root)` to render immediately.
-
-## Choosing a rendering mode
-
-Two rendering modes are available, and DOT graphs have no interactivity to
-lose either way, so build-time rendering is usually the better default:
-
-| | `{{< graphviz >}}` (runtime) | `{{< graphviz-static >}}` (build-time) |
-|---|---|---|
-| Where it renders | Visitor's browser (WASM) | Your build machine (Node) |
-| Client cost | ~1.4 MB WASM runtime, deferred + lazy | Zero JS shipped |
-| Input modes | inline, `src`, `b64` | `src` only |
-| Output | Live `<svg>` in the DOM | Static `<img>` pointing at a pre-rendered SVG |
-| Requires | Nothing extra | `node scripts/render-graphviz.js` before `hugo build` |
-
-Use the runtime shortcode for diagrams assembled from dynamic or inline
-content. For diagrams that live in a file under `assets/`, prefer the
-build-time shortcode: it ships no JavaScript to visitors and the output is
-indexable, cacheable, plain SVG — the same tradeoff `hugo-mod-plantuml` makes
-for PlantUML diagrams.
-
-### Build-time usage
-
-Create a source file under `assets/`:
-
-```text
-assets/diagrams/architecture.dot
-```
-
-Render it locally (mirrors `assets/**/*.{dot,gv}` into `static/generated/graphviz/**/*.svg`,
-skipping files that are already up to date):
-
-```bash
-node _modules/hugo-mod-graphviz/scripts/render-graphviz.js .
-```
-
-Use the shortcode:
+**Shortcode** - Pre-rendered at build time, ships no JavaScript:
 
 ```text
 {{< graphviz-static src="diagrams/architecture.dot" alt="Architecture diagram" >}}
 ```
 
-## Output assets
+### Parameters
 
-The module publishes, through Hugo Pipes (`resources.Get` + `fingerprint`),
-so each file's published URL includes a content hash for cache-busting and
-ships a Subresource Integrity attribute:
+`graphviz`, the runtime shortcode:
 
-- `libs/hugo-mod-graphviz/viz.<hash>.js`
-- `libs/hugo-mod-graphviz/hugo-mod-graphviz.<hash>.js`
-- `libs/hugo-mod-graphviz/hugo-mod-graphviz.<hash>.css`
-- `scripts/render-graphviz.js` (build-time renderer, see above)
+| Param | Description |
+|---|---|
+| inner content | Raw DOT source between the opening and closing tags |
+| `src` | Path, relative to `assets/`, of a file holding the DOT source |
+| `b64` | Base64-encoded DOT source |
 
-Source files live under `assets/libs/hugo-mod-graphviz/` in this
-repository; see [`VENDORED.md`](VENDORED.md) for their unfingerprinted
-checksums.
+> At least one input is required. If several are given, `b64` wins over `src`, and `src` wins over the inner content, the others are ignored silently.
 
-## Development
+> A missing or empty source fails the build with an explicit error rather than emitting a blank page. Invalid DOT is not caught at build time: it surfaces at render time, as the Graphviz message in place of the graph.
 
-```bash
-git clone https://github.com/julienpoirou/hugo-mod-graphviz
-cd hugo-mod-graphviz
-```
+> `src` is resolved with `readFile` from the project root, so the file must live in your own site's `assets/`. A file mounted from a theme or from another module will not be found.
 
-The main verification is handled by GitHub Actions with a minimal Hugo site that mounts the module and builds a sample page.
+`graphviz-static`, the build-time shortcode:
 
-## Contributing
+| Param | Default | Description |
+|---|---|---|
+| `src` | *(required)* | Path, relative to `assets/`, of the DOT file. The extension is swapped for `.svg` to locate the pre-rendered output |
+| `alt` | `Graphviz diagram` | Alternative text of the emitted `<img>` |
+| `class` | *(none)* | Extra CSS class added to the wrapping `<figure>` |
 
-- Use Conventional Commits for branch history
-- Update docs or changelog when behavior changes
-- Keep sample DOT snippets valid and minimal
-- See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) for contribution guidance
+> `graphviz-static` only points at a file already rendered by the script below. It does not check that the SVG exists: a missing render shows up as a broken image, not as a build error.
+
+## Rendering
+
+The runtime shortcode emits a wrapper carrying the DOT source as base64, and the graph is laid out in the reader's browser by the Graphviz WASM build inside `viz.js`.
+
+- The stylesheet and both scripts are injected once per page, at the first `graphviz` shortcode, in the flow of the content, not in `<head>`. Each one is fingerprinted and carries a Subresource Integrity hash.
+- The WASM runtime is instantiated lazily: each graph renders as it approaches the viewport, with a 200px margin. Browsers without `IntersectionObserver` render everything immediately instead.
+- Output goes through `renderSVGElement()`, falling back to `renderString()` on runtimes that expose the renderer but fail DOM element output.
+- For content injected after page load, call `window.HugoModGraphviz.observeAll(root)` for lazy rendering, or `renderAll(root)` to render immediately.
+- A DOT syntax error is written in place of the graph and its output marked `.is-error`, leaving the rest of the page intact.
+- Without JavaScript the runtime shortcode leaves an empty block. `graphviz-static` is unaffected: it is a plain `<img>`.
+
+## Vendored assets
+
+Viz.js `3.11.0` (1.4 MB, standalone build, Graphviz compiled to WASM) ships inside the module, no CDN, no third-party request at page load. Provenance, license and SHA-256 are recorded in [VENDORED.md](VENDORED.md).
+
+## License
+
+MIT © 2025 [Julien Poirou](mailto:julienpoirou@protonmail.com)
