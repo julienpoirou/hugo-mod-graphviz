@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.2...v0.3.3) (2026-08-09)
+
+
+### Corrections 🐛
+
+* **security:** Uncontrolled data used in path expression ([1328d3e](https://github.com/julienpoirou/hugo-mod-graphviz/commit/1328d3ef7ab663a7da7e6f6b8349c5a7449b0e83))
+
 ## [0.3.2](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.1...v0.3.2) (2026-07-14)
 
 
