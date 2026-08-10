@@ -1,0 +1,18 @@
+{
+  "name": "hugo-mod-graphviz-vendored",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Declares the third-party libraries this module vendors under assets/libs/. Never installed at build time or at runtime: it exists so Dependabot tracks their versions and GitHub raises security alerts on the code we actually ship. See ../VENDORED.md.",
+  "dependencies": {
+    "@viz-js/viz": "3.11.0"
+  },
+  "vendored": {
+    "viz.js": {
+      "path": "assets/libs/hugo-mod-graphviz/viz.js",
+      "package": "@viz-js/viz",
+      "source": "https://cdn.jsdelivr.net/npm/@viz-js/viz@{version}/lib/viz-standalone.min.js",
+      "note": "jsDelivr's pass-through of lib/viz-standalone.js: the file is already minified, so the CDN only prepends a banner. Re-fetching that URL reproduces the checksum below; fetching lib/viz-standalone.js directly does not.",
+      "sha256": "4d463fa09ba8fcae7abd5aaf56c9870ec38e03db05e79e9e2eebc61d20fa8ab3"
+    }
+  }
+}
