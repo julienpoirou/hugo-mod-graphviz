@@ -6,11 +6,11 @@ All files live in `assets/libs/hugo-mod-graphviz/`.
 
 | File | Library | Version | License | SHA-256 |
 |---|---|---|---|---|
-| `viz.js` | [Viz.js](https://github.com/mdaines/viz-js) (standalone build) | 3.11.0 | MIT | `4d463fa09ba8fcae7abd5aaf56c9870ec38e03db05e79e9e2eebc61d20fa8ab3` |
+| `viz.js` | [Viz.js](https://github.com/mdaines/viz-js) (standalone build) | 3.29.0 | MIT | `d94405c431c23f674e740f042514231e559d60fffc93dc557b22fafc295fbbc0` |
 
-Source: `https://cdn.jsdelivr.net/npm/@viz-js/viz@3.11.0/lib/viz-standalone.min.js`
+Source: `https://cdn.jsdelivr.net/npm/@viz-js/viz@3.29.0/dist/viz-global.js`
 
-That is jsDelivr's pass-through of `lib/viz-standalone.js`. The file is already minified, so the CDN only prepends a banner to it. The banner is why fetching `lib/viz-standalone.js` directly does not reproduce the checksum above.
+That is the standalone build, the one that defines `window.Viz` and exposes `Viz.instance()`. Up to 3.11.0 it shipped as `lib/viz-standalone.js`; from 3.12.0 upstream moved it to `dist/viz-global.js`. The 3.11.0 copy vendored before this update came through jsDelivr's minifier, which prepends a banner, so its checksum did not match the raw upstream file either.
 
 First-party files, under this repository's [LICENSE](LICENSE): `hugo-mod-graphviz.js`, `hugo-mod-graphviz.css`.
 
