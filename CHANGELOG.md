@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.3...v0.4.0) (2026-08-10)
+
+
+### Features ✨
+
+* **assets:** Update viz.js to 3.29.0 ([c04ef1c](https://github.com/julienpoirou/hugo-mod-graphviz/commit/c04ef1c87d355aada582b90c5e55c987985350c1))
+
 ## [0.3.3](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.2...v0.3.3) (2026-08-09)
 
 
