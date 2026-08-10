@@ -10,9 +10,9 @@
     "viz.js": {
       "path": "assets/libs/hugo-mod-graphviz/viz.js",
       "package": "@viz-js/viz",
-      "source": "https://cdn.jsdelivr.net/npm/@viz-js/viz@{version}/lib/viz-standalone.min.js",
-      "note": "jsDelivr's pass-through of lib/viz-standalone.js: the file is already minified, so the CDN only prepends a banner. Re-fetching that URL reproduces the checksum below; fetching lib/viz-standalone.js directly does not.",
-      "sha256": "4d463fa09ba8fcae7abd5aaf56c9870ec38e03db05e79e9e2eebc61d20fa8ab3"
+      "source": "https://cdn.jsdelivr.net/npm/@viz-js/viz@{version}/dist/viz-global.js",
+      "note": "The standalone build that defines window.Viz. Up to 3.11.0 it shipped as lib/viz-standalone.js; from 3.12.0 upstream moved it to dist/viz-global.js, which is what this pins.",
+      "sha256": "d94405c431c23f674e740f042514231e559d60fffc93dc557b22fafc295fbbc0"
     }
   }
 }
