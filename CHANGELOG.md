@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.4.1...v0.4.2) (2026-11-01)
+
+
+### Corrections 🐛
+
+* **test:** Add fast-check fuzz test for the decode boundary ([#30](https://github.com/julienpoirou/hugo-mod-graphviz/issues/30)) ([b6c75d9](https://github.com/julienpoirou/hugo-mod-graphviz/commit/b6c75d92d60ef0cbd4ac9f9089a1454da6842418))
+
 ## [0.4.1](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.4.0...v0.4.1) (2026-11-01)
 
 
