@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.4.0...v0.4.1) (2026-11-01)
+
+
+### Corrections 🐛
+
+* **ci:** Restore release-please PAT token fallback ([#29](https://github.com/julienpoirou/hugo-mod-graphviz/issues/29)) ([7df2a04](https://github.com/julienpoirou/hugo-mod-graphviz/commit/7df2a040f1e613fcddb4b77e2431c4d3e227cbbe))
+* **security:** Harden workflow execution ([9f4ed48](https://github.com/julienpoirou/hugo-mod-graphviz/commit/9f4ed480e09a5cf8ef25b4f6255e75724961221a))
+
 ## [0.4.0](https://github.com/julienpoirou/hugo-mod-graphviz/compare/v0.3.3...v0.4.0) (2026-08-10)
 
 
